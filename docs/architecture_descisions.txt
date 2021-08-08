@@ -1,0 +1,13 @@
+Requirement 1: Locations data was expected to increase
+Architecture Decision 1:
+- Separate Locations service to its own microservice to allow it to be independently scaled
+- Since we can expect Location data to be high volume, hitting the database for every location data that arrives is a bottle neck. To remove that bottle neck, I want to introduce Kafka as a message bus where the service will produce a location json to the kafka broker and a long running service will take care of converting that to a Location entity and write it to the data base. Ideally, this can be either done with a long running service that can be scaled or a celery task that will be created when the location api is hit and it will do the part of reading from Kafka and writing to the database
+- Ideally, the location table should be in its own database that can be indepedently scaled as well but that can be the next step of enhancement 
+
+
+Requirement 2: Message Passing
+Architecture Descision 2:
+- Introduce a GRPC server that provides a get_location_by_id api which will be used by the Persons service 
+- This allows for
+1. Separate the Persons and Location tables into a separate databases if required
+2. Potentially some caching for atendees who are constantly checking available connections

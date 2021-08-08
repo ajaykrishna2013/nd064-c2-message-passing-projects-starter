@@ -1,0 +1,206 @@
+swagger: "2.0"
+info:
+  description: "This is a sample Udaconnect server.  "
+  version: "1.0.0"
+  title: "Swagger Udaconnect"
+  termsOfService: "http://swagger.io/terms/"
+  contact:
+    email: "apiteam@swagger.io"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+host: "udaconnect.swagger.io"
+basePath: "/v2"
+tags:
+- name: "udaconnect"
+  description: "Find conference attendees"
+  externalDocs:
+    description: "Find out more"
+    url: "http://swagger.io"
+- name: "udalocate"
+  description: "share your location"
+schemes:
+- "https"
+- "http"
+paths:
+  /api/locations/{locationId}:
+    get:
+      summary: "Find Location details Id"
+      description: "Returns loaction details"
+      operationId: "getLocationById"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "locationId"
+        in: "path"
+        description: "get Location for ID"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Location"
+        "400":
+          description: "Invalid ID supplied"
+        "404":
+          description: "Location not found"
+      security:
+      - api_key: []
+  /api/persons/{personId}/connections:
+    get:
+      summary: "Find connections by for personID"
+      description: "Returns connections for Person"
+      operationId: "getConnectionsById"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "personId"
+        in: "path"
+        description: "get Connections for personID"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Connection"
+        "400":
+          description: "Invalid ID supplied"
+        "404":
+          description: "Not found"
+      security:
+      - api_key: []
+  /api/persons/{personId}:
+    get:
+      summary: "Find connections by for personID"
+      description: "Returns connections for Person"
+      operationId: "getPersonById"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "personId"
+        in: "path"
+        description: "get Connections for personID"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Person"
+        "400":
+          description: "Invalid ID supplied"
+        "404":
+          description: "Person not found"
+      security:
+      - api_key: []
+  /api/persons:
+    get:
+      summary: "Find connections by for personID"
+      description: "Returns all Persons"
+      operationId: "getAllPersons"
+      produces:
+      - "application/xml"
+      - "application/json"
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: "array"
+            items:
+              $ref: '#/definitions/Person'
+    post:
+      tags:
+      - "person"
+      summary: "Adds a conference attendee to DB"
+      description: ""
+      operationId: "AddPerson"
+      consumes:
+      - "application/x-www-form-urlencoded"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Add a Conference Attendee PErson"
+        required: true
+        schema:
+          $ref: "#/definitions/Person"
+      responses:
+        "405":
+          description: "Invalid input"
+securityDefinitions:
+  udaconnect_auth:
+    type: "oauth2"
+    authorizationUrl: "http://udaconnect.swagger.io/oauth/dialog"
+    flow: "implicit"
+  api_key:
+    type: "apiKey"
+    name: "api_key"
+    in: "header"
+definitions:
+  Person:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      first_name:
+        type: "integer"
+        format: "int64"
+      last_name:
+        type: "integer"
+        format: "int32"
+      company_name:
+        type: "string"
+        format: "date-time"
+    xml:
+      name: "Person"
+  Location:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      person_id:
+        type: "integer"
+        format: "int64"
+      longitude:
+        type: "string"
+      latitude:
+        type: "string"
+      create_time:
+        type: "string"
+        format: "date-time"
+    xml:
+      name: "Person"
+  Connection:
+    type: "array"
+    items:
+      type: object
+      properties:
+        location:
+          $ref: '#/definitions/Location'
+        person:
+          $ref: '#/definitions/Person'
+  ApiResponse:
+    type: "object"
+    properties:
+      code:
+        type: "integer"
+        format: "int32"
+      type:
+        type: "string"
+      message:
+        type: "string"
+externalDocs:
+  description: "Find out more about Swagger"
+  url: "http://swagger.io"

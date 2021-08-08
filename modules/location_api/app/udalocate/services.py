@@ -1,18 +1,26 @@
 import logging
 from typing import Dict
 
+from flask_restful.representations import json
+from kafka import KafkaProducer
+from kafka.errors import KafkaTimeoutError
+
 from app import db
 from app.udalocate.models import Location
 from app.udalocate.schemas import LocationSchema
 from geoalchemy2.functions import ST_AsText, ST_Point
 
 
-logging.basicConfig(level=logging.WARNING)
+
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("location-api")
 
 
-
 class LocationService:
+    # TOPIC_NAME = 'locations'
+    # KAFKA_SERVER = 'localhost:9092'
+    # producer = KafkaProducer(bootstrap_servers=KAFKA_SERVER)
+
     @staticmethod
     def retrieve(location_id) -> Location:
         location, coord_text = (
@@ -26,7 +34,7 @@ class LocationService:
         return location
 
     @staticmethod
-    def create(location: Dict) -> Location:
+    def create(location: Dict):
         validation_results: Dict = LocationSchema().validate(location)
         if validation_results:
             logger.warning(f"Unexpected data format in payload: {validation_results}")
@@ -40,3 +48,17 @@ class LocationService:
         db.session.commit()
 
         return new_location
+
+        # TODO: Uncomment if Kafka Consumer works
+        # logger.info('Location Received', location)
+        # location_bytes = json.dumps(location).encode()
+        # try:
+        #     LocationService.producer.send(LocationService.TOPIC_NAME, location_bytes)
+        #     LocationService.producer.flush(timeout=60)
+        #     return True
+        # except Exception as e:
+        #     logger.error("Producer Timed Out")
+        #     return False
+
+
+
